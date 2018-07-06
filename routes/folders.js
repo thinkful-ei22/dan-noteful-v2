@@ -72,7 +72,7 @@ router.post('/', (req, res, next) => {
     .insert(newFolder, ['id', 'name'])
     .then(([result]) => {
       if(result) {
-        res.json(result);
+        res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
       } else {
         next();
       }

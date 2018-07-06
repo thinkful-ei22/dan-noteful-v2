@@ -149,9 +149,13 @@ const noteful = (function () {
         id: store.currentNote.id,
         title: editForm.find('.js-note-title-entry').val(),
         content: editForm.find('.js-note-content-entry').val(),
-        folderId: editForm.find('.js-note-folder-entry').val(),
+        folder_id: editForm.find('.js-note-folder-entry').val(),
         tags: editForm.find('.js-note-tags-entry').val()
       };
+
+      // editForm.find('.js-note-title-entry').val('');
+      // editForm.find('.js-note-content-entry').val('');
+      // editForm.find('.js-note-folder-entry').val('');
 
       if (store.currentNote.id) {
         api.update(`/api/notes/${noteObj.id}`, noteObj)
