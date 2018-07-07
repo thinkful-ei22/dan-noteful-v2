@@ -76,8 +76,8 @@ router.get('/:id', (req, res, next) => {
 // Update a note
 router.put('/:id', (req, res, next) => {
   const id = req.params.id;
-
   const { title, content, folder_id, tags } = req.body;
+  const noteTags = tags;
 
   const updateObj = {
     title: title,
@@ -92,26 +92,19 @@ router.put('/:id', (req, res, next) => {
     err.status = 400;
     return next(err);
   }
-  console.log('this is my my updateObj', updateObj);
-  let noteId;
-  let noteTags;
+
 
   knex('notes')
     .where('id', id)
-    .update(updateObj).returning('id')
-    .then(([id]) => {
-      // Insert related tags into notes_tags table
-      noteId = id;
-      noteTags = tags;
-    })
+    .update(updateObj)
     .then(() => {
       return knex('notes_tags')
         .leftJoin('tags', 'tags.id', 'notes_tags.tag_id')
-        .where('note_id', noteId)
+        .where('note_id', id)
         .del();
     })
     .then(() => {
-      const tagsInsert = noteTags.map(tagId => ({ note_id: noteId, tag_id: tagId }));
+      const tagsInsert = noteTags.map(tagId => ({ note_id: id, tag_id: tagId }));
       return knex.insert(tagsInsert).into('notes_tags');
     })
     .then(() => {
@@ -123,7 +116,7 @@ router.put('/:id', (req, res, next) => {
         .leftJoin('folders', 'notes.folder_id', 'folders.id')
         .leftJoin('notes_tags', 'notes.id', 'notes_tags.note_id')
         .leftJoin('tags', 'tags.id', 'notes_tags.tag_id')
-        .where('notes.id', noteId);
+        .where('notes.id', id);
     })
     .then(result => {
       if (result) {

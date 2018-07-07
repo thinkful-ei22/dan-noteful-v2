@@ -153,10 +153,6 @@ const noteful = (function () {
         tags: editForm.find('.js-note-tags-entry').val()
       };
 
-      // editForm.find('.js-note-title-entry').val('');
-      // editForm.find('.js-note-content-entry').val('');
-      // editForm.find('.js-note-folder-entry').val('');
-
       if (store.currentNote.id) {
         api.update(`/api/notes/${noteObj.id}`, noteObj)
           .then(updateResponse => {
@@ -234,7 +230,6 @@ const noteful = (function () {
       event.preventDefault();
 
       const newFolderName = $('.js-new-folder-entry').val();
-      $('.js-new-folder-entry').val('');
 
       api.create('/api/folders', { name: newFolderName })
         .then(() => {
