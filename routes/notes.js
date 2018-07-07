@@ -77,7 +77,6 @@ router.get('/:id', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   const id = req.params.id;
   const { title, content, folder_id, tags } = req.body;
-  const noteTags = tags;
 
   const updateObj = {
     title: title,
@@ -99,12 +98,11 @@ router.put('/:id', (req, res, next) => {
     .update(updateObj)
     .then(() => {
       return knex('notes_tags')
-        .leftJoin('tags', 'tags.id', 'notes_tags.tag_id')
         .where('note_id', id)
         .del();
     })
     .then(() => {
-      const tagsInsert = noteTags.map(tagId => ({ note_id: id, tag_id: tagId }));
+      const tagsInsert = tags.map(tagId => ({ note_id: id, tag_id: tagId }));
       return knex.insert(tagsInsert).into('notes_tags');
     })
     .then(() => {
